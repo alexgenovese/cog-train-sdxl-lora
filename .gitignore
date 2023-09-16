@@ -1,3 +1,10 @@
+preprocess-cache
+refiner-cache
+sdxl-cache
+safety-cache
+trained-model
+example_datasets
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
