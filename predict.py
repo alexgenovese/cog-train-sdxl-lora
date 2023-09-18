@@ -165,8 +165,11 @@ class Predictor(BasePredictor):
             substitution_tokens=list(token_dict.keys()),
         )
 
+        # Create SDXL 
         if not os.path.exists(SDXL_MODEL_CACHE):
             download_weights(SDXL_URL, SDXL_MODEL_CACHE)
+        
+        # Create output directory
         if os.path.exists(OUTPUT_DIR):
             shutil.rmtree(OUTPUT_DIR)
         os.makedirs(OUTPUT_DIR)
