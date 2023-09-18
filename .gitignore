@@ -1,9 +1,11 @@
+temp_in
 preprocess-cache
 refiner-cache
 sdxl-cache
 safety-cache
 trained-model
 example_datasets
+.cog
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
