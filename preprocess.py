@@ -1,3 +1,4 @@
+
 # Have SwinIR upsample
 # Have BLIP2 auto caption
 # Have CLIPSeg auto mask concept
@@ -21,7 +22,7 @@ import torch
 from PIL import Image, ImageFilter
 from tqdm import tqdm
 from transformers import (
-    Blip2Processor,
+    BlipProcessor,
     BlipForConditionalGeneration,
     CLIPSegForImageSegmentation,
     CLIPSegProcessor,
@@ -33,11 +34,8 @@ MODEL_PATH = "./preprocess-cache"
 TEMP_OUT_DIR = "./temp/"
 TEMP_IN_DIR = "./temp_in/"
 
-BLIP2_REPO_ID = "Salesforce/blip2-opt-2.7b"
-BLIP_2_FOLDER = "/Blip2"
-CIDAS_REPO_ID = "CIDAS/clipseg-rd64-refined"
+BLIP_FOLDER = "/Blip"
 CIDAS_FOLDER = "/CIDAS"
-UPSCALER_REPO_ID = "caidas/swin2SR-realworld-sr-x4-64-bsrgan-psnr"
 UPSCALER_FOLDER = "/Caidas"
 
 def download_weights(repo_id, dest):
@@ -238,7 +236,7 @@ def blip_captioning_dataset(
         "Salesforce/blip-image-captioning-large",
         "Salesforce/blip-image-captioning-base",
         "Salesforce/blip2-opt-2.7b"
-    ] = "Salesforce/blip2-opt-2.7b", # Added BLIP2 as default
+    ] = "Salesforce/blip-image-captioning-large", # Added BLIP2 as default
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     substitution_tokens: Optional[List[str]] = None,
     **kwargs,
@@ -246,8 +244,8 @@ def blip_captioning_dataset(
     """
     Returns a list of captions for the given images
     """
-    processor = Blip2Processor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_2_FOLDER, torch_dtype=torch.float16)
-    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_2_FOLDER, torch_dtype=torch.float16).to(device)
+    processor = BlipProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16)
+    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16).to(device)
     captions = []
     text = text.strip()
     print(f"Input captioning text: {text}")

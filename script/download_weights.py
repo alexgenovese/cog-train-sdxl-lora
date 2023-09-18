@@ -42,8 +42,8 @@ if not os.path.exists("./safety-cache"):
     safety.save_pretrained("./safety-cache")
 
 # Download the preprocess models
-BLIP2_REPO_ID = "Salesforce/blip2-opt-2.7b"
-BLIP_2_FOLDER = "/Blip2"
+BLIP_REPO_ID = "Salesforce/blip-image-captioning-large"
+BLIP_FOLDER = "/Blip"
 CIDAS_REPO_ID = "CIDAS/clipseg-rd64-refined"
 CIDAS_FOLDER = "/CIDAS"
 UPSCALER_REPO_ID = "caidas/swin2SR-realworld-sr-x4-64-bsrgan-psnr"
@@ -55,10 +55,10 @@ if not os.path.exists(PREPROCESS_MODEL_CACHE+UPSCALER_FOLDER):
     upscaler = Swin2SRForImageSuperResolution.from_pretrained(UPSCALER_REPO_ID, cache_dir=PREPROCESS_MODEL_CACHE)
     upscaler.save_pretrained(PREPROCESS_MODEL_CACHE+UPSCALER_FOLDER, safe_serialization=True)
 
-if not os.path.exists(PREPROCESS_MODEL_CACHE+CIDAS_REPO_ID):
+if not os.path.exists(PREPROCESS_MODEL_CACHE+CIDAS_FOLDER):
     cidas = CLIPSegProcessor.from_pretrained(CIDAS_REPO_ID, cache_dir=PREPROCESS_MODEL_CACHE)
     cidas.save_pretrained(PREPROCESS_MODEL_CACHE+CIDAS_FOLDER, safe_serialization=True)
 
-if not os.path.exists(PREPROCESS_MODEL_CACHE+BLIP_2_FOLDER):
-    blip2 = Blip2Processor.from_pretrained(BLIP2_REPO_ID, cache_dir=PREPROCESS_MODEL_CACHE)
-    blip2.save_pretrained(PREPROCESS_MODEL_CACHE+BLIP_2_FOLDER, safe_serialization=True)
+if not os.path.exists(PREPROCESS_MODEL_CACHE+BLIP_FOLDER):
+    blip2 = Blip2Processor.from_pretrained(BLIP_REPO_ID, cache_dir=PREPROCESS_MODEL_CACHE)
+    blip2.save_pretrained(PREPROCESS_MODEL_CACHE+BLIP_FOLDER, safe_serialization=True)
