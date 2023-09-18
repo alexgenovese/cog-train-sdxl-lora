@@ -55,7 +55,7 @@ class Predictor(BasePredictor):
         ),
         max_train_steps: int = Input(
             description="Number of individual training steps. Takes precedence over num_train_epochs",
-            default=1000,
+            default=None,
         ),
         # gradient_accumulation_steps: int = Input(
         #     description="Number of training steps to accumulate before a backward pass. Effective batch size = gradient_accumulation_steps * batch_size",
