@@ -38,22 +38,6 @@ BLIP_FOLDER = "/Blip"
 CIDAS_FOLDER = "/CIDAS"
 UPSCALER_FOLDER = "/Caidas"
 
-def download_weights(repo_id, dest):
-    start = time.time()
-    print("creating folder: " + dest)
-    os.makedirs(dest)
-    print("downloading repo from Huggingface: ")
-    snapshot_download(
-        repo_id=repo_id,
-        repo_type="model",
-        cache_dir=dest,
-        resume_download=True,
-        force_download=True,
-        token="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"
-    )
-    print("downloading took: ", time.time() - start)
-
-
 def preprocess(
     input_images_filetype: str,
     input_zip_path: Path,
