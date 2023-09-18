@@ -18,7 +18,7 @@ if not os.path.exists("./refiner-cache"):
         vae=better_vae,
         torch_dtype=torch.float16,
         use_safetensors=True,
-        variant="fp16",
+        variant="bf16",
     )
     pipe.save_pretrained("./sdxl-cache", safe_serialization=True)
 
@@ -28,7 +28,7 @@ if not os.path.exists("./refiner-cache"):
         "stabilityai/stable-diffusion-xl-refiner-1.0",
         torch_dtype=torch.float16,
         use_safetensors=True,
-        variant="fp16",
+        variant="bf16",
     )
     # TODO - we don't need to save all of this and in fact should save just the unet, tokenizer, and config.
     pipe.save_pretrained("./refiner-cache", safe_serialization=True)
