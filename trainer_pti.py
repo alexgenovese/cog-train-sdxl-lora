@@ -25,7 +25,7 @@ from dataset_and_utils import (
 def main(
     pretrained_model_name_or_path: Optional[
         str
-    ] = "./cache",  # "stabilityai/stable-diffusion-xl-base-1.0",
+    ] = "./sdxl-cache",  # "stabilityai/stable-diffusion-xl-base-1.0",
     revision: Optional[str] = None,
     instance_data_dir: Optional[str] = "./dataset/zeke/captions.csv",
     output_dir: str = "ft_masked_coke",
@@ -58,6 +58,7 @@ def main(
     verbose: bool = True,
     is_lora: bool = True,
     lora_rank: int = 32,
+    lora_rank_alpha: int = 16
 ) -> None:
     if allow_tf32:
         torch.backends.cuda.matmul.allow_tf32 = True
@@ -169,6 +170,7 @@ def main(
                 hidden_size=hidden_size,
                 cross_attention_dim=cross_attention_dim,
                 rank=lora_rank,
+                network_alpha=lora_rank_alpha
             )
             unet_lora_attn_procs[name] = module
             module.to(device)
