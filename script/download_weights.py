@@ -8,11 +8,20 @@ from diffusers import AutoencoderKL, DiffusionPipeline
 from diffusers.pipelines.stable_diffusion.safety_checker import ( StableDiffusionSafetyChecker )
 from transformers import (Blip2Processor, CLIPSegProcessor, Swin2SRForImageSuperResolution)
 
-# Define the correct VAE
-better_vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
+SDXL_MODEL_CACHE = "./sdxl-cache"
+VAE_CACHE = "./vae-cache"
 
-# Check folder exists
-if not os.path.exists("./refiner-cache"):
+# VAE CACHE CHECKER
+# if not os.path.exists(VAE_CACHE):
+#    better_vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
+#    better_vae.save_pretrained(VAE_CACHE, safe_serialization=True)
+
+better_vae = AutoencoderKL.from_pretrained(
+    "madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16
+)
+
+# SDXL CACHE CHECKER
+if not os.path.exists(SDXL_MODEL_CACHE):
     pipe = DiffusionPipeline.from_pretrained(
         "stabilityai/stable-diffusion-xl-base-1.0",
         vae=better_vae,
@@ -20,26 +29,8 @@ if not os.path.exists("./refiner-cache"):
         use_safetensors=True,
         variant="bf16",
     )
-    pipe.save_pretrained("./sdxl-cache", safe_serialization=True)
+    pipe.save_pretrained(SDXL_MODEL_CACHE, safe_serialization=True)
 
-# Check folder exists
-if not os.path.exists("./refiner-cache"):
-    pipe = DiffusionPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-xl-refiner-1.0",
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-        variant="bf16",
-    )
-    # TODO - we don't need to save all of this and in fact should save just the unet, tokenizer, and config.
-    pipe.save_pretrained("./refiner-cache", safe_serialization=True)
-
-# Check folder exists
-if not os.path.exists("./safety-cache"):
-    safety = StableDiffusionSafetyChecker.from_pretrained(
-        "CompVis/stable-diffusion-safety-checker",
-        torch_dtype=torch.float16,
-    )
-    safety.save_pretrained("./safety-cache")
 
 # Download the preprocess models
 BLIP_REPO_ID = "Salesforce/blip-image-captioning-large"
