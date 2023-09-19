@@ -27,7 +27,7 @@ if not os.path.exists(SDXL_MODEL_CACHE):
         vae=better_vae,
         torch_dtype=torch.float16,
         use_safetensors=True,
-        variant="bf16",
+        variant="fp16",
     )
     pipe.save_pretrained(SDXL_MODEL_CACHE, safe_serialization=True)
 
