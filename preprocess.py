@@ -13,7 +13,6 @@ import tarfile
 from pathlib import Path
 from typing import List, Literal, Optional, Tuple, Union
 from zipfile import ZipFile
-# from rembg import remove # remove background from image
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -476,12 +475,6 @@ def load_and_save_masks_and_captions(
         files = sorted(files)[:n_length]
         print(files)
     images = [Image.open(file).convert("RGB") for file in files]
-
-    # captions
-    print(f"Removing background {len(images)}...")
-#    for image in images:
-#        cleaned_image = remove(input)
-
 
     # captions
     print(f"Generating {len(images)} captions...")

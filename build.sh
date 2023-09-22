@@ -19,3 +19,4 @@ docker build --build-arg BASE_IMAGE=$BASE_IMAGE -t final .
 FINAL_ID=$(docker inspect final:latest --format='{{index .Id}}')
 
 echo "Final image: $FINAL_ID"
+cog push
