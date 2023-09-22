@@ -1,6 +1,3 @@
 ./preprocess-cache/Caidas/model.safetensors
 ./preprocess-cache/models--caidas--swin2SR-realworld-sr-x4-64-bsrgan-psnr/blobs/4a5f52a20932085557ed115f87c0ee8385e12f2719108c0dfd38c64aedea4710
-./sdxl-cache/text_encoder_2/model.safetensors
-./sdxl-cache/text_encoder/model.safetensors
-./sdxl-cache/unet/diffusion_pytorch_model.safetensors
-./sdxl-cache/vae/diffusion_pytorch_model.safetensors
+./example-dataset/arque-1024.zip

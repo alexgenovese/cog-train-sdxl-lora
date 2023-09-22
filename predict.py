@@ -51,7 +51,7 @@ class Predictor(BasePredictor):
         ),
         num_train_epochs: int = Input(
             description="Number of epochs to loop through your training dataset",
-            default=4000,
+            default=20,
         ),
         max_train_steps: int = Input(
             description="Number of individual training steps. Takes precedence over num_train_epochs",
@@ -67,19 +67,23 @@ class Predictor(BasePredictor):
         ),
         unet_learning_rate: float = Input(
             description="Learning rate for the U-Net. We recommend this value to be somewhere between `1e-6` to `1e-5`.",
-            default=3e-06, #0,000003
+            default=1e-04, #0,0001
         ),
         ti_lr: float = Input(
             description="Scaling of learning rate for training textual inversion embeddings. Don't alter unless you know what you're doing.",
-            default=3e-05,
+            default=1e-04, # 0,0001
         ),
         lora_lr: float = Input(
             description="Scaling of learning rate for training LoRA embeddings. Don't alter unless you know what you're doing.",
-            default=4e-4,
+            default=4e-4, # 0,0004
         ),
         lora_rank: int = Input(
             description="Rank of LoRA embeddings. Don't alter unless you know what you're doing.",
             default=32,
+        ),
+        lora_rank_alpha: int = Input(
+            description="Rank of LoRA Alpha.",
+            default=16,
         ),
         lr_scheduler: str = Input(
             description="Learning rate scheduler to use for training",
@@ -87,7 +91,21 @@ class Predictor(BasePredictor):
             choices=[
                 "constant",
                 "linear",
-                "cosine"
+                "cosine",
+                "cosine_wirth_restarts",
+                "polynomial",
+                "constant_with_warmup",
+                "inverse_sqrt",
+                "reduce_lr_on_plateau"
+            ],
+        ),
+        optimization: str = Input(
+            description="TODO: now using",
+            default="AdamW",
+            choices=[
+                "AdamW",
+                "AdaFactor",
+                "AdamWeightDecay"
             ],
         ),
         lr_warmup_steps: int = Input(
@@ -104,7 +122,7 @@ class Predictor(BasePredictor):
         # ),
         caption_prefix: str = Input(
             description="Text which will be used as prefix during automatic captioning. Must contain the `token_string`. For example, if caption text is 'a photo of TOK', automatic captioning will expand to 'a photo of TOK under a bridge', 'a photo of TOK holding a cup', etc.",
-            default="a photo of siduhc",
+            default="a photo of siduhc ",
         ),
         mask_target_prompts: str = Input(
             description="Prompt that describes part of the image that you will find important. For example, if you are fine-tuning your pet, `photo of a dog` will be a good prompt. Prompt-based masking is used to focus the fine-tuning process on the important/salient parts of the image",
@@ -199,6 +217,7 @@ class Predictor(BasePredictor):
             mixed_precision="bf16",
             device="cuda:0",
             lora_rank=lora_rank,
+            lora_rank_alpha=lora_rank_alpha,
             is_lora=is_lora,
         )
         
