@@ -19,7 +19,6 @@ build:
     - "pandas==2.0.3"
     - "torchvision==0.15.2"
     - "numpy==1.25.1"
-    - "pandas==2.0.3"
     - "fire==0.5.0"
     - "opencv-python>=4.1.0.25"
     - "mediapipe==0.10.2"
