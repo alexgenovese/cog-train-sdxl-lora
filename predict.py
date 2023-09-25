@@ -57,10 +57,19 @@ class Predictor(BasePredictor):
             description="Number of individual training steps. Takes precedence over num_train_epochs",
             default=None,
         ),
-        # gradient_accumulation_steps: int = Input(
-        #     description="Number of training steps to accumulate before a backward pass. Effective batch size = gradient_accumulation_steps * batch_size",
-        #     default=1,
-        # ), # todo.
+        class_token: str = Input(
+            description="Token class to pass to ClipSeg for identify the object",
+            default="bag",
+            choices=[
+                "bag",
+                "shoes",
+                "t-shirt",
+                "shirt",
+                "jacket",
+                "trousers",
+                "blazer"
+            ]
+        ),
         is_lora: bool = Input(
             description="Whether to use LoRA training. If set to False, will use Full fine tuning",
             default=True,
@@ -181,6 +190,7 @@ class Predictor(BasePredictor):
             use_face_detection_instead=use_face_detection_instead,
             temp=clipseg_temperature,
             substitution_tokens=list(token_dict.keys()),
+            class_token=class_token
         )
 
         # Create SDXL 
