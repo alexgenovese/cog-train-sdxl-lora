@@ -47,6 +47,7 @@ def preprocess(
     use_face_detection_instead: bool,
     temp: float,
     substitution_tokens: List[str],
+    class_token: str
 ) -> Path:
     # assert str(files).endswith(".zip"), "files must be a zip file"
 
@@ -96,6 +97,7 @@ def preprocess(
         use_face_detection_instead=use_face_detection_instead,
         temp=temp,
         substitution_tokens=substitution_tokens,
+        class_token=class_token
     )
 
     return Path(TEMP_OUT_DIR)
@@ -162,6 +164,7 @@ def clipseg_mask_generator(
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
     bias: float = 0.01,
     temp: float = 1.0,
+    class_token: str = None,
     **kwargs,
 ) -> List[Image.Image]:
     """
@@ -172,8 +175,9 @@ def clipseg_mask_generator(
         print(
             f'Warning: only one target prompt "{target_prompts}" was given, so it will be used for all images'
         )
-
-        target_prompts = [target_prompts] * len(images)
+        # TEST HERE
+        print("Instead of {class_token} is using {class_token}")
+        target_prompts = [class_token] * len(images)
 
     processor = CLIPSegProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER)
     model = CLIPSegForImageSegmentation.from_pretrained(
@@ -435,6 +439,7 @@ def load_and_save_masks_and_captions(
     temp: float = 1.0,
     n_length: int = -1,
     substitution_tokens: Optional[List[str]] = None,
+    class_token: str = None
 ):
     """
     Loads images from the given files, generates masks for them, and saves the masks and captions and upscale images
@@ -451,6 +456,7 @@ def load_and_save_masks_and_captions(
                 use_face_detection_instead=False,
                 temp=1.0,
                 n_length=-1,
+                class_token="bag"
             )
     """
     os.makedirs(output_dir, exist_ok=True)
@@ -489,7 +495,7 @@ def load_and_save_masks_and_captions(
     print(f"Generating {len(images)} masks...")
     if not use_face_detection_instead:
         seg_masks = clipseg_mask_generator(
-            images=images, target_prompts=mask_target_prompts, temp=temp
+            images=images, target_prompts=mask_target_prompts, temp=temp, class_token=class_token
         )
     else:
         seg_masks = face_mask_google_mediapipe(images=images)
