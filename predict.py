@@ -387,7 +387,7 @@ class Predictor(BasePredictor):
 
 
         main_trainer(
-            pretrained_model_name_or_path=self.cache_base_model,
+            pretrained_model_name_or_path=SDXL_MODEL_CACHE,
             instance_data_dir=os.path.join(input_dir, "captions.csv"),
             output_dir=OUTPUT_DIR,
             seed=seed,
