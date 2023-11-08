@@ -15,6 +15,7 @@ preprocess-cache/
 _training_dataset/
 sdxl-cache/
 weights-cache/
+temp/
 
 
 # Byte-compiled / optimized / DLL files
