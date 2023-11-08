@@ -11,7 +11,6 @@ from huggingface_hub import login
 from script.download_weights import cache_base_model
 
 # Defining Static Variables
-BASE_MODEL = 'alexgenovese/reica06'
 SDXL_MODEL_CACHE = "./sdxl-cache"
 SDXL_URL = ""
 FEATURE_EXTRACTOR = "./feature-extractor"
@@ -43,33 +42,21 @@ class Predictor(BasePredictor):
             self.device = self.get_device_type()
             self.torch_type = self.get_torch_type()
             self.variant = "fp32" if torch.is_floating_point(torch.tensor(32)) else "fp16"
-            self.cache_base_model = './weights-cache/base_model'
-            self.in_base_model = None
             pbar.update(10)
-            """"
-            if not os.path.exists(self.cache_base_model):
-                cache_base_model()
-            pbar.update(15)
-
-            self.in_base_model = AutoPipelineForText2Image.from_pretrained(
-                BASE_MODEL,
-                cache_dir=self.cache_base_model,
-                torch_dtype=self.torch_type
-            ).to(self.device)
-            pbar.update(10)
-            """
 
             print(f"Settings {self.variant} {self.torch_type} {self.device}")
 
             # Create SDXL 
-        if not os.path.exists(SDXL_MODEL_CACHE):
-            download_weights(SDXL_URL, SDXL_MODEL_CACHE)
+            if not os.path.exists(SDXL_MODEL_CACHE):
+                download_weights(SDXL_URL, SDXL_MODEL_CACHE)
+            pbar.update(10)
 
-        self.in_base_model = DiffusionPipeline.from_pretrained(
-                "stabilityai/stable-diffusion-xl-base-1.0",
-                cache_dir=SDXL_MODEL_CACHE,
-                torch_dtype=self.torch_type,
-        ).to(self.device)
+            self.in_base_model = DiffusionPipeline.from_pretrained(
+                    "stabilityai/stable-diffusion-xl-base-1.0",
+                    cache_dir=SDXL_MODEL_CACHE,
+                    torch_dtype=self.torch_type,
+            ).to(self.device)
+            pbar.update(10)
 
         print("setup took: ", time.time() - start)
 

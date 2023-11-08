@@ -48,23 +48,3 @@ if not os.path.exists(PREPROCESS_MODEL_CACHE+CIDAS_FOLDER):
 if not os.path.exists(PREPROCESS_MODEL_CACHE+BLIP_FOLDER):
     blip2 = Blip2Processor.from_pretrained(BLIP_REPO_ID, cache_dir=PREPROCESS_MODEL_CACHE)
     blip2.save_pretrained(PREPROCESS_MODEL_CACHE+BLIP_FOLDER, safe_serialization=True)
-
-
-BASE_MODEL = "alexgenovese/reica06"
-BASE_MODEL_CACHE = './weights-cache/base_model'
-
-
-def cache_base_model():
-    if not os.path.exists(BASE_MODEL_CACHE):
-        try:
-            os.makedirs(BASE_MODEL_CACHE)
-            start = time.time()
-            print("Converting Reica custom model")
-            pipe = StableDiffusionXLPipeline.from_pretrained( BASE_MODEL )
-            pipe.save_pretrained(BASE_MODEL_CACHE, safe_serialization=True)
-            print("Downloading took: ", time.time() - start)
-        except Exception as error:
-            print("BASE_MODEL - Something went wrong while downloading")
-            print(f"{error}")
-            shutil.rmtree(BASE_MODEL_CACHE)
-            print("BASE_MODEL - Removed empty cache directory")
