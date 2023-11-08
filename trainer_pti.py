@@ -22,7 +22,7 @@ from dataset_and_utils import (
 )
 
 
-def main(
+def main_trainer(
     pretrained_model_name_or_path: Optional[
         str
     ] = "./sdxl-cache",  # "stabilityai/stable-diffusion-xl-base-1.0",

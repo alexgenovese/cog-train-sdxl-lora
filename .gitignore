@@ -10,6 +10,12 @@ trained-model
 example_datasets
 .cog
 .DS_Store
+venv/
+preprocess-cache/
+_training_dataset/
+sdxl-cache/
+weights-cache/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
