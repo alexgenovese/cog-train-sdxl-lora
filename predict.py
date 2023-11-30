@@ -11,7 +11,7 @@ from huggingface_hub import login
 
 # Defining Static Variables
 SDXL_MODEL_CACHE = "./sdxl-cache"
-SDXL_URL = ""
+SDXL_URL = "https://weights.replicate.delivery/default/sdxl/sdxl-vae-fix-1.0.tar"
 FEATURE_EXTRACTOR = "./feature-extractor"
 OUTPUT_DIR = "training_out"
 HF_TOKEN = "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"
