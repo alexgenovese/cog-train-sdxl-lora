@@ -237,16 +237,15 @@ def blip_captioning_dataset(
     """
     Returns a list of captions for the given images
     """
-    processor = BlipProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16)
-    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16).to(device)
+    processor = BlipProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float32)
+    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float32).to(device)
     captions = []
     text = text.strip()
     print(f"Input captioning text: {text}")
     for image in tqdm(images):
-        inputs = processor(images=image, return_tensors="pt").to(device, torch.float16)
-        out = model.generate(**inputs)
-        print(f"CLIP caption generated {out}")
-        caption = processor.batch_decode(out[0], skip_special_tokens=True)[0].strip()
+        inputs = processor(images=image, return_tensors="pt").to(device, torch.float32)
+        generated_ids = model.generate(**inputs)
+        caption = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
         print(f"CLIP caption Processed {caption}")
 
         # BLIP 2 lowercases all caps tokens. This should properly replace them w/o messing up subwords. I'm sure there's a better way to do this.
@@ -255,8 +254,8 @@ def blip_captioning_dataset(
             sub_cap = sub_cap.replace(" " + token.lower() + " ", " " + token + " ")
             caption = sub_cap.strip()
 
-        print(f"CLIP caption End {text} {caption}")
-        captions.append(text + " " + caption)
+        print(f"CLIP caption End {text}, {caption}")
+        captions.append(text + ", " + caption)
     
     print("Generated captions", captions)
     return captions

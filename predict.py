@@ -8,7 +8,6 @@ from diffusers import AutoPipelineForText2Image, DiffusionPipeline
 # Class for training LoRA
 from trainer_pti import main_trainer
 from huggingface_hub import login
-from script.download_weights import cache_base_model
 
 # Defining Static Variables
 SDXL_MODEL_CACHE = "./sdxl-cache"
@@ -324,7 +323,7 @@ class Predictor(BasePredictor):
         optimization: str = "AdamW",
         lr_warmup_steps: int = 0,
         token_string: str = "siduhc",
-        caption_prefix: str = "a photo of siduhc ",
+        caption_prefix: str = "a photo of siduhc shoes",
         mask_target_prompts: str = None,
         crop_based_on_salience: bool = True,
         clipseg_temperature: float = 1.0,
