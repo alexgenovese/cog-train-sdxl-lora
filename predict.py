@@ -245,23 +245,21 @@ class Predictor(BasePredictor):
             mask_target_prompts=mask_target_prompts,
             target_size=resolution,
             crop_based_on_salience=crop_based_on_salience,
-            use_face_detection_instead=use_face_detection_instead,
+            use_face_detection_instead=False,
             temp=clipseg_temperature,
             substitution_tokens=list(token_dict.keys()),
             class_token=class_token,
             device=self.device,
-            dtype=self.device
+            dtype=self.torch_type
         )
 
-        if not os.path.exists(SDXL_MODEL_CACHE):
-            download_weights(SDXL_URL, SDXL_MODEL_CACHE)
-
-        # Create output directory
+        # Clean and create output directory
         if os.path.exists(OUTPUT_DIR):
             shutil.rmtree(OUTPUT_DIR)
         os.makedirs(OUTPUT_DIR)
 
-        main(
+
+        main_trainer(
             pretrained_model_name_or_path=SDXL_MODEL_CACHE,
             instance_data_dir=os.path.join(input_dir, "captions.csv"),
             output_dir=OUTPUT_DIR,
