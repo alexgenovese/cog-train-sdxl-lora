@@ -154,7 +154,7 @@ class Predictor(BasePredictor):
                 "reduce_lr_on_plateau"
             ],
         ),
-        optimization: str = Input(
+        optimizer: str = Input(
             description="Optimizer",
             default="AdamW",
             choices=[
@@ -261,6 +261,7 @@ class Predictor(BasePredictor):
             lora_lr=lora_lr,
             lr_scheduler=lr_scheduler,
             lr_warmup_steps=lr_warmup_steps,
+            optimizer=optimizer,
             token_dict=token_dict,
             inserting_list_tokens=all_token_lists,
             verbose=verbose,
