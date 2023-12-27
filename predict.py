@@ -107,7 +107,7 @@ class Predictor(BasePredictor):
         verbose: bool = True,
         checkpointing_steps: int = 999999,
         input_images_filetype: str = "infer",
-    ) -> Path:
+    ):
         # Hard-code token_map for now. Make it configurable once we support multiple concepts or user-uploaded caption csv.
         token_map = token_string + ":2"
 
@@ -183,13 +183,13 @@ class Predictor(BasePredictor):
         out_path = "trained_model.tar"
         with tarfile.open(out_path, "w") as tar:
             for file_path in directory.rglob("*"):
-                print(file_path)
+                print(f"file path: {file_path}")
                 arcname = file_path.relative_to(directory)
                 tar.add(file_path, arcname=arcname)
 
 
-        return Path(out_path)
-        # return out_path
+        # return Path(out_path)
+        return out_path
     
 
 def main():
