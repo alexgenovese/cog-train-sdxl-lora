@@ -50,6 +50,7 @@ def main_trainer(
     lr_num_cycles: int = 1,
     lr_power: float = 1.0,
     dataloader_num_workers: int = 0,
+    optimizer: str = "AdamW",
     max_grad_norm: float = 1.0,  # todo with tests
     allow_tf32: bool = True,
     mixed_precision: Optional[str] = "bf16",
@@ -190,11 +191,25 @@ def main_trainer(
                 "weight_decay": 1e-3,
             },
         ]
-
-    optimizer = torch.optim.AdamW(
-        params_to_optimize,
-        weight_decay=1e-4,
-    )
+    
+    if optimizer == "AdamW": 
+        optimizer = torch.optim.AdamW(
+            params_to_optimize,
+            weight_decay=1e-4,
+        )
+    elif optimizer == "AdaFactor":
+        optimizer = torch.optim.AdaFactor(
+            params_to_optimize,
+            # lr=lora_lr,
+            eps=(1e-30, 1e-3),
+            clip_threshold=1.0,
+            decay_rate=-0.8,
+            beta1=None,
+            weight_decay=0.0,
+            relative_step=False,
+            scale_parameter=False,
+            warmup_init=False,
+        )
 
     print(f"# PTI : Loading dataset, do_cache {do_cache}")
 
