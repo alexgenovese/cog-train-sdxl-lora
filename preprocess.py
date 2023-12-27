@@ -26,7 +26,7 @@ from transformers import (
     CLIPSegForImageSegmentation,
     CLIPSegProcessor,
     Swin2SRForImageSuperResolution,
-    Swin2SRImageProcessor
+    AutoImageProcessor
 )
 
 MODEL_PATH = "./preprocess-cache"
@@ -130,7 +130,7 @@ def swin_ir_sr(
     model = Swin2SRForImageSuperResolution.from_pretrained(
         model_id, cache_dir=MODEL_PATH+UPSCALER_FOLDER
     ).to(device)
-    processor = Swin2SRImageProcessor()
+    processor = AutoImageProcessor.from_pretrained("caidas/swin2SR-classical-sr-x2-64")
 
     out_images = []
 
