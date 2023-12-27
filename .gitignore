@@ -13,7 +13,7 @@ example_datasets
 venv/
 preprocess-cache/
 _training_dataset/
-sdxl-cache/
+base-model-cache/
 weights-cache/
 temp/
 
