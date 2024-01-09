@@ -4,7 +4,7 @@ from cog import BasePredictor, Input, Path
 from typing import Tuple
 # Before starting the training process
 from preprocess import preprocess
-from diffusers import AutoPipelineForText2Image, DiffusionPipeline
+from diffusers import AutoPipelineForText2Image, DiffusionPipeline, StableDiffusionXLPipeline
 # Class for training LoRA
 from trainer_pti import main_trainer
 from huggingface_hub import login
@@ -13,7 +13,7 @@ from huggingface_hub import login
 FEATURE_EXTRACTOR = "./feature-extractor"
 OUTPUT_DIR = "training_out"
 HF_TOKEN = "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"
-BASE_MODEL = "SG161222/RealVisXL_V2.0"
+BASE_MODEL = "SG161222/RealVisXL_V3.0"
 BASE_MODEL_CACHE = "./base-model-cache"
 
 # Global functions
@@ -43,12 +43,11 @@ class Predictor(BasePredictor):
 
             # Create SDXL 
             if not os.path.exists(BASE_MODEL_CACHE):
-                self.in_base_model = DiffusionPipeline.from_pretrained( BASE_MODEL, torch_dtype=self.torch_type )
+                self.in_base_model = StableDiffusionXLPipeline.from_pretrained( BASE_MODEL, torch_dtype=self.torch_type )
                 self.in_base_model.save_pretrained(BASE_MODEL_CACHE)
             pbar.update(10)
         
         print("setup took: ", time.time() - start)
-
 
     def get_torch_type(self):
         if torch.backends.mps.is_available():
@@ -295,7 +294,7 @@ class Predictor(BasePredictor):
         lora_lr: float = 4e-4, # 0,0004
         lora_rank: int = 32,
         lora_rank_alpha: int = 16,
-        lr_scheduler: str = "constant",
+        lr_scheduler: str = "cosine",
         lr_warmup_steps: int = 0,
         token_string: str = "siduhc",
         caption_prefix: str = "a photo of siduhc shoes",
@@ -306,6 +305,9 @@ class Predictor(BasePredictor):
         checkpointing_steps: int = 999999,
         input_images_filetype: str = "infer",
     ):
+        os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+        os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+
         # Hard-code token_map for now. Make it configurable once we support multiple concepts or user-uploaded caption csv.
         token_map = token_string + ":2"
 
