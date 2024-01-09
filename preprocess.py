@@ -26,7 +26,8 @@ from transformers import (
     CLIPSegForImageSegmentation,
     CLIPSegProcessor,
     Swin2SRForImageSuperResolution,
-    AutoImageProcessor
+    AutoImageProcessor,
+    AutoProcessor
 )
 
 MODEL_PATH = "./preprocess-cache"
@@ -183,7 +184,7 @@ def clipseg_mask_generator(
         print("Instead of {class_token} is using {class_token}")
         target_prompts = [class_token] * len(images)
 
-    processor = CLIPSegProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER)
+    processor = AutoProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER)
     model = CLIPSegForImageSegmentation.from_pretrained(
         model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER
     ).to(device)
