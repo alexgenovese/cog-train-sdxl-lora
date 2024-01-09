@@ -154,14 +154,6 @@ class Predictor(BasePredictor):
                 "reduce_lr_on_plateau"
             ],
         ),
-        optimizer: str = Input(
-            description="Optimizer",
-            default="AdamW",
-            choices=[
-                "AdamW",
-                "AdaFactor"
-            ],
-        ),
         lr_warmup_steps: int = Input(
             description="Number of warmup steps for lr schedulers with warmups.",
             default=0,
@@ -261,7 +253,6 @@ class Predictor(BasePredictor):
             lora_lr=lora_lr,
             lr_scheduler=lr_scheduler,
             lr_warmup_steps=lr_warmup_steps,
-            optimizer=optimizer,
             token_dict=token_dict,
             inserting_list_tokens=all_token_lists,
             verbose=verbose,
@@ -305,7 +296,6 @@ class Predictor(BasePredictor):
         lora_rank: int = 32,
         lora_rank_alpha: int = 16,
         lr_scheduler: str = "constant",
-        optimization: str = "AdamW",
         lr_warmup_steps: int = 0,
         token_string: str = "siduhc",
         caption_prefix: str = "a photo of siduhc shoes",
