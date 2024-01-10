@@ -1,7 +1,6 @@
 .dockerignore
 STATUS.md
 example-dataset
-temp_in
 preprocess-cache
 refiner-cache
 sdxl-cache
@@ -10,8 +9,13 @@ trained-model
 example_datasets
 .cog
 .DS_Store
-temp/
+venv/
+preprocess-cache/
 _training_dataset/
+base-model-cache/
+temp/
+temp_in/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

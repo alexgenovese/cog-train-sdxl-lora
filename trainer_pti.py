@@ -21,16 +21,17 @@ from dataset_and_utils import (
     unet_attn_processors_state_dict,
 )
 
+BASE_MODEL_CACHE = "./base-model-cache"
 
-def main(
+def main_trainer(
     pretrained_model_name_or_path: Optional[
         str
-    ] = "./sdxl-cache",  # "stabilityai/stable-diffusion-xl-base-1.0",
+    ] = BASE_MODEL_CACHE,  # "stabilityai/stable-diffusion-xl-base-1.0",
     revision: Optional[str] = None,
     instance_data_dir: Optional[str] = "./dataset/zeke/captions.csv",
     output_dir: str = "ft_masked_coke",
     seed: Optional[int] = 42,
-    resolution: int = 512,
+    resolution: int = 1024,
     crops_coords_top_left_h: int = 0,
     crops_coords_top_left_w: int = 0,
     train_batch_size: int = 1,
@@ -107,7 +108,7 @@ def main(
         for name, param in text_encoder.named_parameters():
             if "token_embedding" in name:
                 param.requires_grad = True
-                print(name)
+                print(f"token_embedding : {name}")
                 text_encoder_parameters.append(param)
             else:
                 param.requires_grad = False
@@ -189,6 +190,7 @@ def main(
                 "weight_decay": 1e-3,
             },
         ]
+    
 
     optimizer = torch.optim.AdamW(
         params_to_optimize,
@@ -399,4 +401,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    main_trainer()

@@ -1,35 +1,23 @@
-#!/usr/bin/env python
-# Run this before you deploy it on replicate, because if you don't
-# whenever you run the model, it will download the weights from the
-# internet, which will take a long time.
-import os
-import torch
-from diffusers import AutoencoderKL, DiffusionPipeline
+import os, torch, time, shutil
+from diffusers import AutoencoderKL, DiffusionPipeline, StableDiffusionXLPipeline
 from diffusers.pipelines.stable_diffusion.safety_checker import ( StableDiffusionSafetyChecker )
 from transformers import (Blip2Processor, CLIPSegProcessor, Swin2SRForImageSuperResolution)
 
-SDXL_MODEL_CACHE = "./sdxl-cache"
-VAE_CACHE = "./vae-cache"
+BASE_MODEL = "SG161222/RealVisXL_V3.0"
+BASE_MODEL_CACHE = "./base-model-cache"
 
 # VAE CACHE CHECKER
 # if not os.path.exists(VAE_CACHE):
 #    better_vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
 #    better_vae.save_pretrained(VAE_CACHE, safe_serialization=True)
 
-better_vae = AutoencoderKL.from_pretrained(
-    "madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16
-)
-
 # SDXL CACHE CHECKER
-if not os.path.exists(SDXL_MODEL_CACHE):
-    pipe = DiffusionPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-xl-base-1.0",
-        vae=better_vae,
-        torch_dtype=torch.float16,
-        use_safetensors=True,
+if not os.path.exists(BASE_MODEL_CACHE):
+    pipe = StableDiffusionXLPipeline.from_pretrained(
+        BASE_MODEL_CACHE,
         variant="fp16",
     )
-    pipe.save_pretrained(SDXL_MODEL_CACHE, safe_serialization=True)
+    pipe.save_pretrained(BASE_MODEL_CACHE, safe_serialization=True)
 
 
 # Download the preprocess models

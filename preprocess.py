@@ -26,7 +26,8 @@ from transformers import (
     CLIPSegForImageSegmentation,
     CLIPSegProcessor,
     Swin2SRForImageSuperResolution,
-    Swin2SRImageProcessor
+    AutoImageProcessor,
+    AutoProcessor
 )
 
 MODEL_PATH = "./preprocess-cache"
@@ -47,7 +48,9 @@ def preprocess(
     use_face_detection_instead: bool,
     temp: float,
     substitution_tokens: List[str],
-    class_token: str
+    class_token: str,
+    device: str,
+    dtype: torch
 ) -> Path:
     # assert str(files).endswith(".zip"), "files must be a zip file"
 
@@ -97,7 +100,9 @@ def preprocess(
         use_face_detection_instead=use_face_detection_instead,
         temp=temp,
         substitution_tokens=substitution_tokens,
-        class_token=class_token
+        class_token=class_token,
+        device = device,
+        dtype = dtype
     )
 
     return Path(TEMP_OUT_DIR)
@@ -126,7 +131,7 @@ def swin_ir_sr(
     model = Swin2SRForImageSuperResolution.from_pretrained(
         model_id, cache_dir=MODEL_PATH+UPSCALER_FOLDER
     ).to(device)
-    processor = Swin2SRImageProcessor()
+    processor = AutoImageProcessor.from_pretrained("caidas/swin2SR-classical-sr-x2-64")
 
     out_images = []
 
@@ -179,7 +184,7 @@ def clipseg_mask_generator(
         print("Instead of {class_token} is using {class_token}")
         target_prompts = [class_token] * len(images)
 
-    processor = CLIPSegProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER)
+    processor = AutoProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER)
     model = CLIPSegForImageSegmentation.from_pretrained(
         model_id, cache_dir=MODEL_PATH+CIDAS_FOLDER
     ).to(device)
@@ -224,32 +229,35 @@ def blip_captioning_dataset(
         "Salesforce/blip-image-captioning-base",
         "Salesforce/blip2-opt-2.7b"
     ] = "Salesforce/blip-image-captioning-large", # Added BLIP2 as default
-    device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+    # device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     substitution_tokens: Optional[List[str]] = None,
+    device: str = "",
+    dtype: torch = None,
     **kwargs,
 ) -> List[str]:
     """
     Returns a list of captions for the given images
     """
-    processor = BlipProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16)
-    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float16).to(device)
+    processor = BlipProcessor.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float32)
+    model = BlipForConditionalGeneration.from_pretrained(model_id, cache_dir=MODEL_PATH+BLIP_FOLDER, torch_dtype=torch.float32).to(device)
     captions = []
     text = text.strip()
     print(f"Input captioning text: {text}")
     for image in tqdm(images):
-        inputs = processor(images=image, return_tensors="pt").to(device, torch.float16)
-        out = model.generate(**inputs)
-        caption = processor.batch_decode(out[0], skip_special_tokens=True)[0].strip()
+        inputs = processor(images=image, return_tensors="pt").to(device, torch.float32)
+        generated_ids = model.generate(**inputs)
+        caption = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+        print(f"CLIP caption Processed {caption}")
 
         # BLIP 2 lowercases all caps tokens. This should properly replace them w/o messing up subwords. I'm sure there's a better way to do this.
         for token in substitution_tokens:
-            print(token)
             sub_cap = " " + caption + " "
-            print(sub_cap)
             sub_cap = sub_cap.replace(" " + token.lower() + " ", " " + token + " ")
             caption = sub_cap.strip()
 
-        captions.append(text + " " + caption)
+        print(f"CLIP caption End {text}, {caption}")
+        captions.append(text + ", " + caption)
+    
     print("Generated captions", captions)
     return captions
 
@@ -439,7 +447,9 @@ def load_and_save_masks_and_captions(
     temp: float = 1.0,
     n_length: int = -1,
     substitution_tokens: Optional[List[str]] = None,
-    class_token: str = None
+    class_token: str = None,
+    device: str = "",
+    dtype: torch = None
 ):
     """
     Loads images from the given files, generates masks for them, and saves the masks and captions and upscale images
@@ -485,7 +495,7 @@ def load_and_save_masks_and_captions(
     # captions
     print(f"Generating {len(images)} captions...")
     captions = blip_captioning_dataset(
-        images, text=caption_text, substitution_tokens=substitution_tokens
+        images, text=caption_text, substitution_tokens=substitution_tokens, device=device, dtype=dtype
     )
 
     if mask_target_prompts is None:
