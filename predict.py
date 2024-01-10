@@ -36,15 +36,16 @@ class Predictor(BasePredictor):
         with tqdm(total=100, desc="Setup") as pbar:
             self.device = self.get_device_type()
             self.torch_type = self.get_torch_type()
-            self.variant = "fp32" if torch.is_floating_point(torch.tensor(32)) else "fp16"
+            self.variant = "fp16"
             pbar.update(10)
 
             print(f"Settings {self.variant} {self.torch_type} {self.device}")
+            print("REMOVE - ONE TIME - CACHE FOLDERS")
 
             # Create SDXL 
             if not os.path.exists(BASE_MODEL_CACHE):
-                self.in_base_model = StableDiffusionXLPipeline.from_pretrained( BASE_MODEL, torch_dtype=self.torch_type )
-                self.in_base_model.save_pretrained(BASE_MODEL_CACHE)
+                self.in_base_model = StableDiffusionXLPipeline.from_pretrained( BASE_MODEL, torch_dtype=self.torch_type, variant=self.variant )
+                self.in_base_model.save_pretrained(BASE_MODEL_CACHE, safe_serialization=True)
             pbar.update(10)
         
         print("setup took: ", time.time() - start)
@@ -239,6 +240,7 @@ class Predictor(BasePredictor):
 
         main_trainer(
             pretrained_model_name_or_path=BASE_MODEL_CACHE,
+            revision="fp16",
             instance_data_dir=os.path.join(input_dir, "captions.csv"),
             output_dir=OUTPUT_DIR,
             seed=seed,
