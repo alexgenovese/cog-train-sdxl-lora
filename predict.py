@@ -13,7 +13,7 @@ from huggingface_hub import login
 FEATURE_EXTRACTOR = "./feature-extractor"
 OUTPUT_DIR = "training_out"
 HF_TOKEN = "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"
-BASE_MODEL = "SG161222/RealVisXL_V3.0"
+BASE_MODEL = "SG161222/RealVisXL_V4.0"
 BASE_MODEL_CACHE = "./base-model-cache"
 
 # Global functions
@@ -113,7 +113,9 @@ class Predictor(BasePredictor):
                 "shirt",
                 "jacket",
                 "trousers",
-                "blazer"
+                "blazer",
+                "chair",
+                "table"
             ]
         ),
         is_lora: bool = Input(
